@@ -51,18 +51,22 @@ public class LibroController {
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
-                                "Libro non trovato"
+                                "Libro non trovato per ISBN"
                         )
                 );
     }
 
     @GetMapping("/libro")
     @Operation(summary = "Cerca un libro per titolo esatto")
-    public ResponseEntity<LibroDTO> getLibroByTitolo(@RequestParam("titolo") String titolo) {
-
-        return libroService.getByTitolo(titolo)
-            .map(ResponseEntity::ok)                    // versione method reference
-            .orElse(ResponseEntity.notFound().build());
+    public APIResponse<LibroDTO> getLibroByTitolo(@RequestParam("titolo") String titolo){
+        Optional<LibroDTO> libro = libroService.getByTitolo(titolo);
+        return libro.map(APIResponse::success)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Libro non trovato per titolo"
+                        )
+                );
     }
 
     @PostMapping("/add")
@@ -81,7 +85,7 @@ public class LibroController {
         boolean deleted = libroService.deleteByIsbn(isbn);
 
         return deleted ? 
-            ResponseEntity.ok("Libro eliminato correttamente!") : 
+            ResponseEntity.noContent().build() :
             ResponseEntity.notFound().build();
     }
 

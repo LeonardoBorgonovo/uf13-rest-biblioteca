@@ -1,22 +1,32 @@
 package it.marconi.biblioteca.controllers.exception;
 
 import it.marconi.biblioteca.domain.response.APIResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIResponse<Object>> handle(Exception ex){
+        List<String> errors = new ArrayList<>();
+        Arrays.stream(ex.getStackTrace())
+                .forEach(st -> errors.add(st.toString()));
+
+        log.error("Errore non gestito: {}", ex.getMessage(), ex);
+
         return ResponseEntity.internalServerError().body(
                 APIResponse.error(
+                        errors,
                         ex.getMessage(),
                         500
                 )
@@ -25,6 +35,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<APIResponse<Object>> handle(ResponseStatusException ex){
+        log.warn("Errore gestione risposte: {}", ex.getReason());
+        log.trace("Stack trace completo: ", ex);
+
         return new ResponseEntity<>(
                 APIResponse.fail(ex.getReason(), ex.getStatusCode().value()),
                 ex.getStatusCode()

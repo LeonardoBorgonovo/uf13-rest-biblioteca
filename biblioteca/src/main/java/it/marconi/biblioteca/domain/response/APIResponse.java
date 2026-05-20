@@ -66,4 +66,13 @@ public class APIResponse<T> {
                 .code(code)
                 .build();
     }
+
+    public static <T> APIResponse<T> error(T errors, String message,Integer code){
+        return APIResponse.<T>builder()
+                .status(APIResponseStatus.ERROR)
+                .message(message)
+                .code(code)
+                .data(errors)
+                .build();
+    }
 }
