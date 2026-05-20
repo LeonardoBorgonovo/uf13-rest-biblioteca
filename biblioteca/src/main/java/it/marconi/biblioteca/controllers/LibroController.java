@@ -25,9 +25,14 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/libri")
 public class LibroController {
-    
+
+    private final LibroService libroService;
+
     @Autowired
-    LibroService libroService;
+    public LibroController(LibroService libroService) {
+        this.libroService = libroService;
+    }
+
 
     @GetMapping
     @Operation(summary = "Recupera la lista di tutti i libri")

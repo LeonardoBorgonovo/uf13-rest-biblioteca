@@ -49,6 +49,16 @@ public class APIResponse<T> {
                 .build();
     }
 
+    public static <T> APIResponse<T> fail(T errors, String message, Integer code, Integer results){
+        return APIResponse.<T>builder()
+                .status(APIResponseStatus.FAIL)
+                .message(message)
+                .code(code)
+                .data(errors)
+                .results(results)
+                .build();
+    }
+
     public static <T> APIResponse<T> error(String message,Integer code){
         return APIResponse.<T>builder()
                 .status(APIResponseStatus.ERROR)
