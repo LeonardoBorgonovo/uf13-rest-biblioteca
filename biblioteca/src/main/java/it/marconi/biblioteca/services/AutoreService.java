@@ -14,11 +14,16 @@ import it.marconi.biblioteca.repositories.AutoreRepository;
 @Service
 public class AutoreService {
     
-    @Autowired  // dependency injection
-    private AutoreRepository autoreRepo;
+    // dependency injection
+    private final AutoreRepository autoreRepo;
+
+    private final AutoreMapper mapper;
 
     @Autowired
-    private AutoreMapper mapper;
+    public AutoreService(AutoreRepository autoreRepo, AutoreMapper mapper) {
+        this.autoreRepo = autoreRepo;
+        this.mapper = mapper;
+    }
 
     public AutoreDTO save(AutoreDTO autore) {
 

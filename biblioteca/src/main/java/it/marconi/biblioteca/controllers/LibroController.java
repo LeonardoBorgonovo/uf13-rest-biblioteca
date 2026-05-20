@@ -1,8 +1,11 @@
 package it.marconi.biblioteca.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
+import it.marconi.biblioteca.domain.response.APIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import it.marconi.biblioteca.domain.LibroDTO;
 import it.marconi.biblioteca.services.LibroService;
 import jakarta.validation.Valid;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/libri")
@@ -27,18 +31,24 @@ public class LibroController {
 
     @GetMapping
     @Operation(summary = "Recupera la lista di tutti i libri")
-    public List<LibroDTO> getAll() {
-
-        return libroService.findAll();
+    public APIResponse<List<LibroDTO>> getAll() {
+        //return libroService.findAll();
+        List<LibroDTO> listaLibri = libroService.findAll();
+        return APIResponse.success(listaLibri);
     }
 
     @GetMapping("/{isbn}")
     @Operation(summary = "Cerca un libro dal sui ISBN")
-    public ResponseEntity<LibroDTO> getLibroByIsbn(@PathVariable String isbn) {
+    public APIResponse<LibroDTO> getLibroByIsbn(@PathVariable String isbn) {
+        Optional<LibroDTO> libro = libroService.getByIsbn(isbn);
 
-        return libroService.getByIsbn(isbn)
-            .map(libro -> ResponseEntity.ok(libro))     // versione lambda-function
-            .orElse(ResponseEntity.notFound().build());
+        return libro.map(APIResponse::success)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Libro non trovato"
+                        )
+                );
     }
 
     @GetMapping("/libro")
