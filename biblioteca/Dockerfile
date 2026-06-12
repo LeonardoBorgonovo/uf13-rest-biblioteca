@@ -10,11 +10,13 @@ RUN mvn clean package -DskipTests
 
 
 # ST2: RUN
-FROM amazoncorretto:21-alpine3.21-jdk AS RUN
+FROM amazoncorretto:21-alpine3.21-jre AS RUN
 WORKDIR /app
+
+ENV SPRING_PROFILES_ACTIVE=prod
 
 COPY --from=build /app/target/*.jar biblioteca.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "biblioteca.jar", "--spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-jar", "biblioteca.jar"]

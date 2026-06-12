@@ -20,21 +20,19 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
-    </root>
-
     <springProfile name="dev">
+        <root level="TRACE">
+            <appender-ref ref="CONSOLE" />
+        </root>
         <logger name="it.marconi.biblioteca" level="TRACE" />
         <logger name="org.hibernate.SQL" level="DEBUG" />
         <logger name="org.hibernate.type.descriptor.sql" level="TRACE" />
     </springProfile>
 
     <springProfile name="prod">
-        <logger name="it.marconi.biblioteca" level="INFO" />
-        <root level="WARN">
+        <root level="INFO">
             <appender-ref ref="FILE" />
         </root>
+        <logger name="it.marconi.biblioteca" level="INFO" />
     </springProfile>
 </configuration>
