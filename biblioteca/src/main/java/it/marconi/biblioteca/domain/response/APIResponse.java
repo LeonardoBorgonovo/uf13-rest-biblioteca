@@ -33,7 +33,7 @@ public class APIResponse<T> {
                 .build();
     }
 
-    public static <T extends Collection<?>> APIResponse<T> success(T data){
+    public static <T extends Collection<?>> APIResponse<T> successCollection(T data){
         return APIResponse.<T>builder()
                 .status(APIResponseStatus.SUCCESS)
                 .data(data)

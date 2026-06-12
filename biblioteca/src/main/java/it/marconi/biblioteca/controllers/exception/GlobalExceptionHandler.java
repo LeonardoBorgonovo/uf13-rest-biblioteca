@@ -23,11 +23,7 @@ public class GlobalExceptionHandler {
         log.error("Errore non gestito: {}", ex.getMessage(), ex);
 
         return ResponseEntity.internalServerError().body(
-                APIResponse.error(
-                        errors,
-                        ex.getMessage(),
-                        500
-                )
+                APIResponse.error("Messaggio generico", 500)
         );
     }
 

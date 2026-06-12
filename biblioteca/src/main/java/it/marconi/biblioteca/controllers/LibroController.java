@@ -39,7 +39,7 @@ public class LibroController {
     public APIResponse<List<LibroDTO>> getAll() {
         //return libroService.findAll();
         List<LibroDTO> listaLibri = libroService.findAll();
-        return APIResponse.success(listaLibri);
+        return APIResponse.successCollection(listaLibri);
     }
 
     @GetMapping("/{isbn}")
@@ -71,22 +71,33 @@ public class LibroController {
 
     @PostMapping("/add")
     @Operation(summary = "Aggiunge un nuovo libro, dato l'autore")
-    public ResponseEntity<LibroDTO> addLibro(@Valid @RequestBody LibroDTO libro) {
+    public ResponseEntity<APIResponse<LibroDTO>> addLibro(@Valid @RequestBody LibroDTO libro) {
         
-        return libroService.save(libro)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        Optional<LibroDTO> libroSalvato = libroService.save(libro);
+        
+        if (libroSalvato.isPresent()){
+            LibroDTO datiLibro = libroSalvato.get();
+            APIResponse<LibroDTO> risposta = APIResponse.success(datiLibro);
+
+            return ResponseEntity.ok(risposta);
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Impossibile aggiungere il libro. Autore non trovato.");
+        }
     }
 
     @DeleteMapping("/{isbn}")
     @Operation(summary = "Elimina un libro dato il suo ISBN")
-    public ResponseEntity<String> deleteLibro(@PathVariable String isbn) {
+    public ResponseEntity<APIResponse<String>> deleteLibro(@PathVariable String isbn) {
 
         boolean deleted = libroService.deleteByIsbn(isbn);
 
-        return deleted ? 
-            ResponseEntity.noContent().build() :
-            ResponseEntity.notFound().build();
+        if (deleted){
+            APIResponse<String> risposta = APIResponse.success("Libro eliminato con successo.");
+
+            return ResponseEntity.ok(risposta);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Impossibile eliminare il libro. Libro non trovato");
+        }
     }
 
 }
