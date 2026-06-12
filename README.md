@@ -20,3 +20,8 @@ L'interfaccia Swagger è disponibile al seguente indirizzo:
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
+
+```markdown
+---
+## 📄 Documentazione Esame UF13
+Le scelte progettuali, i criteri di accettazione e la documentazione del refactoring dell'architettura di risposta sono disponibili nella [Relazione Tecnica Esame](docs/relazione.md).
