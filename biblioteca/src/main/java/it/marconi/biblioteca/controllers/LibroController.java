@@ -100,4 +100,9 @@ public class LibroController {
         }
     }
 
+    @GetMapping("/stress-test-500")
+    public void provocaErrore500() {
+        throw new RuntimeException("Simulazione guasto controllato per difesa orale esame UF13");
+    }
+
 }
