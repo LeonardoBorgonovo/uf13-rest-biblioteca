@@ -51,3 +51,21 @@ Inviando un payload parziale all'endpoint `POST /libri/add`, i validatori JSR-38
   }
 }
 ```
+
+---
+
+## 5. Task 3: Monitoraggio Proattivo e Sistemi di Alerting
+
+### 5.1 Infrastruttura di Monitoraggio (Prometheus & Grafana)
+L'architettura è stata estesa introducendo un sistema di telemetria proattiva per prevenire i disservizi in produzione. Tramite `docker-compose.yml`, sono stati orchestrati tre sistemi interconnessi:
+- **Spring Boot Actuator + Micrometer**: Espone i dati interni della JVM in formato Prometheus sull'endpoint `/actuator/prometheus`.
+- **Prometheus**: Configurato con uno `scrape_interval` di 5 secondi, interroga l'applicazione e storicizza le metriche temporali.
+- **Grafana**: Configurato sulla porta 3000, interroga Prometheus come Data Source. È stata importata la dashboard ufficiale JVM (ID: 4701) per la visualizzazione in tempo reale di memoria Heap, Garbage Collector e stato dei Thread.
+
+### 5.2 Configurazione del Sistema di Alerting e Simulazione di Guasto
+Per soddisfare i criteri di accettazione e validazione legati alla tolleranza ai guasti, è stata implementata una regola di allarme (Alert Rule) basata sulla seguente query PromQL:
+`sum(http_server_requests_seconds_count{status="500"})`
+
+La regola prevede l'attivazione automatica dello stato di **Firing** (Allarme Critico Visivo) al superamento della soglia di 10 errori interni del server (HTTP 500).
+
+Al fine di testare il sistema, è stato predisposto un endpoint di stress-test dedicato nel controller (`/libri/stress-test-500`). La chiamata ripetuta a tale endpoint innesca il `GlobalExceptionHandler` configurato nel Task 1, incrementando la metrica e dimostrando visivamente il corretto funzionamento dell'allarme e il cambio di stato della cabina di regia su Grafana.
